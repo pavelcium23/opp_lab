@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "first",
+      "request": "launch",
+      "mainClass": "first",
+      "projectName": "oop-course-repo_6536cb79"
+    },
+    {
+      "type": "java",
+      "name": "Laboratory",
+      "request": "launch",
+      "mainClass": "Laboratory",
+      "projectName": "oop-course-repo_6536cb79"
+    },
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/suleimanpasa/oop-course-repo",
+      "program": "/Users/suleimanpasa/oop-course-repo/build/Debug/outDebug"
+    }
+  ]
+}
