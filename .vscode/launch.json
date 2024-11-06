@@ -3,6 +3,20 @@
   "configurations": [
     {
       "type": "java",
+      "name": "Creature$CreatureReader",
+      "request": "launch",
+      "mainClass": "oop.practice.Creature$CreatureReader",
+      "projectName": ""
+    },
+    {
+      "type": "java",
+      "name": "Main",
+      "request": "launch",
+      "mainClass": "oop.practice.Main",
+      "projectName": ""
+    },
+    {
+      "type": "java",
       "name": "first",
       "request": "launch",
       "mainClass": "first",
