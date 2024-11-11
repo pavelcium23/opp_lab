@@ -135,3 +135,15 @@ class Universe {
     public String getName() { return name; }
     public List<Creature> getIndividuals() { return individuals; }
 }
+class View {
+    private final ObjectMapper mapper;
+
+    public View(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
+
+    //pretty format of the strings to json file
+    public void writeToFile(Universe universe, String filePath) throws IOException {
+        mapper.writerWithDefaultPrettyPrinter().writeValue(new File(filePath), universe);
+    }
+}
