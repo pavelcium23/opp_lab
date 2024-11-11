@@ -8,34 +8,24 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 public class Main {
     public static void main(String[] args) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        File inputFile = new File("/Users/suleimanpasa/oop-course-repo/lab-papers-please/java-classifcation/src/main/resources/test-input.json");
+        File inputFile = new File("/Users/suleimanpasa/oop-course-repo/lab-papers-please/java-classifcation/src/main/resources/input.json");
         JsonNode data = mapper.readTree(inputFile).get("data");
 
-        // Initialize universes
+        // Initialize universes with names and empty individual lists
         Universe starWars = new Universe("StarWars", new ArrayList<>());
         Universe hitchhikers = new Universe("HitchHiker", new ArrayList<>());
         Universe marvel = new Universe("Marvel", new ArrayList<>());
         Universe rings = new Universe("Rings", new ArrayList<>());
 
-        // Process each individual and classify into universes
+        // Process each individual and classify based on criteria
         for (JsonNode entry : data) {
             Creature creature = new Creature(entry);
             Criteria criteria = new Criteria(entry);
 
-            // Example classification logic
-            if (criteria.age > 100) {
-                rings.addIndividual(creature);  // Example: creatures over age 100 go to the Rings universe
-            } else if (criteria.hasTraits("force-sensitive")) {
-                starWars.addIndividual(creature);  // Example: creatures with "force-sensitive" trait go to Star Wars
-            } else if (criteria.planet.equals("Earth") && criteria.isHumanoid) {
-                marvel.addIndividual(creature);  // Example: humanoids from Earth go to Marvel
-            } else {
-                hitchhikers.addIndividual(creature);  // Default case for Hitchhiker's universe
-            }
+            classifyCreature(creature, criteria, starWars, hitchhikers, marvel, rings);
         }
 
         // Write each universe to its own JSON file
@@ -44,9 +34,25 @@ public class Main {
         mapper.writeValue(new File("lab-papers-please/java-classifcation/src/main/resources/output/marvel.json"), marvel);
         mapper.writeValue(new File("lab-papers-please/java-classifcation/src/main/resources/output/rings.json"), rings);
     }
+
+    // Classification logic
+    private static void classifyCreature(Creature creature, Criteria criteria, Universe starWars, Universe hitchhikers, Universe marvel, Universe rings) {
+        if (criteria.planet.equals("Endor") || criteria.planet.equals("Kashyyyk")|| criteria.hasTraits("HAIRY", "TALL","SHORT")) {
+            starWars.addIndividual(creature); // Star Wars: Individuals from Tatooine or with specific traits
+        } else if (criteria.planet.equals("Betelgeuse") && criteria.isHumanoid || criteria.planet.equals("Asgard") && criteria.isHumanoid || criteria.hasTraits("BLONDE", "TALL")) {
+            marvel.addIndividual(creature); // Marvel: Asgardians or strong, immortal humanoids
+        } else if (criteria.planet.equals("Earth") || criteria.isHumanoid || criteria.age > 200 && criteria.hasTraits("BLONDE","POINTY_EARS","SHORT","BULKY")) {
+            rings.addIndividual(creature); // Rings: Ancient humanoids from Earth
+        } else if (criteria.planet.equals("Vogsphere") || criteria.age < 200 && criteria.hasTraits("EXTRA_HEAD","GREEN","EXTRA_ARMS","BULKY")) {
+            hitchhikers.addIndividual(creature); // Hitchhiker: Characters from Betelgeuse or unusual traits like extra head
+        } else {
+            // Default case if no criteria match
+            hitchhikers.addIndividual(creature);
+        }
+    }
 }
 
-// Creature class
+// Creature class representing each character with attributes
 class Creature {
     private int id;
     private boolean isHumanoid;
@@ -54,7 +60,6 @@ class Creature {
     private int age;
     private List<String> traits;
 
-    // Constructor from JsonNode
     public Creature(JsonNode entry) {
         this.id = entry.has("id") ? entry.get("id").asInt() : -1;
         this.isHumanoid = entry.has("isHumanoid") ? entry.get("isHumanoid").asBoolean() : false;
@@ -68,7 +73,6 @@ class Creature {
         }
     }
 
-    // Getters and toString for debugging purposes
     public int getId() { return id; }
     public boolean isHumanoid() { return isHumanoid; }
     public String getPlanet() { return planet; }
@@ -85,14 +89,13 @@ class Creature {
     }
 }
 
-// Criteria class for applying filters
+// Criteria class to filter and check creature's properties
 class Criteria {
     public String planet;
     public boolean isHumanoid;
     public int age;
     public List<String> traits;
 
-    // Constructor initializes fields with default values if missing in JSON
     public Criteria(JsonNode entry) {
         this.planet = entry.has("planet") ? entry.get("planet").asText() : "";
         this.isHumanoid = entry.has("isHumanoid") ? entry.get("isHumanoid").asBoolean() : false;
@@ -105,7 +108,6 @@ class Criteria {
         }
     }
 
-    // Checks if traits contain specific values
     public boolean hasTraits(String... traitsToCheck) {
         for (String trait : traitsToCheck) {
             if (!this.traits.contains(trait)) {
@@ -116,7 +118,7 @@ class Criteria {
     }
 }
 
-// Universe class to store creatures belonging to each universe
+// Universe class to store creatures of each universe
 class Universe {
     private String name;
     private List<Creature> individuals;
@@ -126,12 +128,10 @@ class Universe {
         this.individuals = individuals;
     }
 
-    // Add individual to universe
     public void addIndividual(Creature creature) {
         individuals.add(creature);
     }
 
-    // Getters for serialization
     public String getName() { return name; }
     public List<Creature> getIndividuals() { return individuals; }
 }
